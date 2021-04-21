@@ -1,0 +1,50 @@
+@using Quack.Models.Account
+@model UserViewModel
+
+@section Scripts {
+  <script src="@Url.Content("~/static/js/PostView.js")"> </script>
+  <script> ofUserID = '@Html.Raw(Model.userDTO.ID)' </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/static/css/User.css" />
+}
+
+
+<partial name="Sidebar"
+          model="@Model.currentUserDTO"></partial>
+<div class="user-container">
+  <div class="profile-container">
+    <img class="profile-picture" src="@Model.userDTO.avatarUrl"> 
+    <div class="profile-text-container">
+      <div class="username"> @Model.userDTO.username </div>
+        <div class="profile-right">
+          @if(@Model.userDTO.ID == @Model.currentUserDTO.ID) {
+            <form asp-controller="Account" asp-action="Delete" method="post">
+                <button class="btn follow-btn" type="submit">Delete</button>
+            </form>
+          }else{
+            @if(@Model.userDTO.followed == false) {
+            <form asp-controller="Account" asp-action="FollowUser" asp-route-ID="@Model.userDTO.ID" method="post">
+                <button class="btn follow-btn" type="submit">Follow</button>
+            </form>
+              } else {
+
+            <form asp-controller="Account" asp-action="UnfollowUser" asp-route-ID="@Model.userDTO.ID" method="post">
+                <button class="btn unfollow-btn" type="submit">Unfollow</button>
+            </form>
+            }
+          }
+      </div>
+
+      <div class="atext">
+        <div>Total posts count: @Model.userDTO.postsCount</div>
+        <div>Total comments count: @Model.userDTO.commentsCount</div>
+        <span>Followers: @Model.userDTO.followedByCount, Follows: @Model.userDTO.followingCount</span>
+      </div>
+      <div style="clear:both"> </div>
+
+    </div>
+  </div>
+  <partial name="PostView"></partial>
+</div>

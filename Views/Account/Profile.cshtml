@@ -1,0 +1,34 @@
+@using Quack.Models.Account
+@model UserViewModel
+
+@section Scripts {
+  <script src="@Url.Content("~/static/js/PostView.js")"> </script>
+  <script> ofUserID = '@Html.Raw(Model.userDTO.ID)' </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/static/css/User.css" />
+}
+
+
+<partial name="Sidebar"
+          model="@Model.currentUserDTO"></partial>
+<div class="user-container">
+  <div class="profile-container">
+    <img class="profile-picture" src="@Model.userDTO.avatarUrl"> 
+    <div class="profile-text-container">
+      <div class="username"> @Model.userDTO.username </div>
+            <div class="profile-right">
+      </div>
+
+      <div class="atext">
+        <div>Total posts count: @Model.userDTO.postsCount</div>
+        <div>Total comments count: @Model.userDTO.commentsCount</div>
+        <span>Followers: @Model.userDTO.followedByCount, Follows: @Model.userDTO.followingCount</span>
+      </div>
+      <div style="clear:both"> </div>
+
+    </div>
+  </div>
+  <partial name="PostView"></partial>
+</div>

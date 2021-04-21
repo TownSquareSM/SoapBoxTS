@@ -1,0 +1,151 @@
+/* @import url('https://fonts.googleapis.com/css?family=Questrial&display=swap'); */
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}
+body{line-height:1}
+ol,ul{list-style:none}
+blockquote,q{quotes:none}
+blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}
+table{border-collapse:collapse;border-spacing:0}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: rgb(220, 20, 60,0.6);
+  -webkit-text-size-adjust:none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+  /* Let's get this party started */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 7px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent;
+    -webkit-border-radius: 0;
+    border-radius: 100px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 100px;
+    border-radius: 100px;
+      background: #fff;
+}
+::-webkit-scrollbar-thumb:window-inactive {
+  background: transparent;
+}
+
+/* body {margin: 0;padding: 0;width: 100%;background-image: linear-gradient(180deg, #171717, #171717);height: 100vh; color: #fff;font-size: 62.5%;font-variant-ligatures: normal;font-kerning: normal;overflow-x: hidden;font-family: 'Questrial', sans-serif;font-size: 16px;line-height: 1.5;letter-spacing: 1.5px;font-weight: 500;} */
+/* p, span, a, div, input {font-family: inherit;font-size: 30px;} */
+h2 {font-size: 40px;margin-bottom: 1rem;}
+p {line-height: 1.5;margin-bottom: 1rem;}
+a {cursor: pointer;}
+/* .btn {padding: 15px 50px; */
+/*     font-size: 18px; */
+/*     color: #fff; */
+/*     border-radius: 3px; */
+/*     background: #575757; */
+/*     display: inline-block; */
+    /* } */
+
+.text-input-frame textarea {
+    height:100%;
+    resize:none;
+}
+
+.panel{
+    background-color: var(--color-accent);
+    padding-left: var(--sidebar-width);
+}
+@media (max-width:700px){
+    .panel {
+        padding-left:0;
+    }
+}
+
+.text-input-bottom .profile-picture{
+    position:relative;
+    float:right;
+}
+.text-input-bottom .as{
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    margin-right:5px;
+    margin-left:5px;
+}
+.text-input-bottom {
+    width:100%;
+    margin-top: 10px;
+}
+button.post-btn {
+    padding-left: 80px;
+    padding-right: 20px;
+    position:relative;
+    color: var(--text-primary);
+    background-color: var(--color-dark);
+    font-weight: bold;
+	  border-radius:  12px 12px;
+    border-bottom: solid 0px var(--color-dark);
+    transition: .5s; 
+}
+
+button.post-btn:hover {
+    transition: all 0.5s ease;
+    cursor: pointer; 
+    background-color: var(--color-special-dim);
+    color: var(--color-dark);
+    transition:  .5s; 
+}
+
+
+.panel-container {
+    height:100%;
+    width:100%;
+    top:0;
+    left:0;
+}
+
+.side-header {
+    position: fixed;
+    width: 40%;
+    height: 100vh;
+    padding: 1rem 1.5%;
+    overflow-x: hidden;
+    background-color: var(--color-dark);
+    z-index: 2;
+}
+.navbar-side {
+    margin-top: 2rem;
+    height: 400px;
+    position: relative;
+    width: 100%;
+}
+
+.navbar-side-text {
+    font-family: 'Fira Sans', sans-serif;
+    font-size: 41px;
+    float: left;
+    vertical-align:middle; 
+}
+.nav-icon {
+    border-radius: 27px;
+    color: var(--color-accent);
+    background-color: var(--color-light);
+    height:54px;
+    width:54px;
+    text-align: center;
+    /* float: right; */
+}
+.navbar-side ul li {
+    vertical-align:middle;
+    line-height:54px;
+    font-family: 'Fira Sans', sans-serif;
+    width: 100%;
+    margin-bottom: 10px;
+    display: block;
+    transition: background 0.1s ease-in-out;
+    background-color: var(--color-primary);
+}

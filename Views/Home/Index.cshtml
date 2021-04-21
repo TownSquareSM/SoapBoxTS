@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Quack.Models.Home
+@using Quack.Models.Account
+@model IndexViewModel
+
+@inject SignInManager<User> SignInManager
+
+@section Scripts {
+  <script src="@Url.Content("~/static/js/PostView.js")"> </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/static/css/Panel.css" />
+}
+
+    
+<partial name="Sidebar"
+          model="@Model.userDTO"></partial>
+<div class="panel">
+  <div style="display:block; justify-content:center">
+    <partial name="WritePost"
+              model="@Model.postContent"></partial>
+    <partial name="PostView"></partial>
+  </div>
+</div>
+
