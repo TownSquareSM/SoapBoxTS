@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>Z:\Code\Work\townsquare\townsquare_soapbox\bin\Release\netcoreapp3.1\publish\</_PublishTargetUrl>
+    <History>True|2021-05-03T16:05:49.0557784Z;True|2021-05-03T11:37:13.5254148-04:00;True|2021-05-03T11:23:07.3927535-04:00;True|2021-05-03T11:17:40.6204091-04:00;</History>
+  </PropertyGroup>
+</Project>

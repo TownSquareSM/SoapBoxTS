@@ -22,8 +22,10 @@ using Quack.Models;
 
 namespace Quack
 {
-    public class BotManager : IHostedService {
-        class Bot {
+    public class BotManager : IHostedService
+    {
+        class Bot
+        {
             public int ID;
             public int userID;
             public int count;
@@ -34,7 +36,8 @@ namespace Quack
             public string[] words;
             public float[,] markovMatrix;
 
-            public Bot(BotModel model) {
+            public Bot(BotModel model)
+            {
                 ID = model.ID;
                 userID = model.userID ?? -1;
 
@@ -67,21 +70,25 @@ namespace Quack
                 string[] seed = tempseed.ToArray();
                 markovMatrix = new float[count, count];
 
-                for(int i = 1; i < seed.Count(); i++) {
-                    int currIndex = Array.IndexOf(words,seed[i  ]);
-                    int prevIndex = Array.IndexOf(words,seed[i-1]);
+                for (int i = 1; i < seed.Count(); i++)
+                {
+                    int currIndex = Array.IndexOf(words, seed[i]);
+                    int prevIndex = Array.IndexOf(words, seed[i - 1]);
                     markovMatrix[currIndex, prevIndex] += 1.0f;
                 }
 
                 // matrix normalizataion
-                for(int x = 0; x < count; x++) {
+                for (int x = 0; x < count; x++)
+                {
                     float columnCount = 0;
-                    for(int y = 0; y < count; y++)
-                        columnCount += markovMatrix[x,y];
+                    for (int y = 0; y < count; y++)
+                        columnCount += markovMatrix[x, y];
 
-                    if(columnCount != 0){
-                        for(int y = 0; y < count; y++){
-                            markovMatrix[x,y] /= columnCount;
+                    if (columnCount != 0)
+                    {
+                        for (int y = 0; y < count; y++)
+                        {
+                            markovMatrix[x, y] /= columnCount;
 
                         }
                     }
@@ -102,131 +109,171 @@ namespace Quack
             _scopeFactory = scopeFactory;
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken) {
-            using (var scope = _scopeFactory.CreateScope()) {
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
                 var _context =
                     scope.ServiceProvider.GetRequiredService<QuackDbContext>();
                 var _userManager =
                     scope.ServiceProvider.GetRequiredService<UserManager<User>>();
                 var unassignedBots = _context.Bot.Where(model => model.userID == null);
-                foreach(var b in unassignedBots) {
-                    string botName = "Bot" + b.ID.ToString() + "_" + random.Next(999999).ToString();
-                    string botMail = botName + "@domain.com";
-                    var user = new User{
-                        UserName = botName,
-                        Email = botMail,
-                        avatarUrl = "https://i.pravatar.cc/100?img=" + random.Next(1,71).ToString()
-                    };
-                    var result = await _userManager.CreateAsync(user, "Password123");
-                    if(!result.Succeeded) {
-                        _logger.LogWarning("Failed to create account for bot " +
-                                           b.ID.ToString());
-                    }
-                    b.userID = Convert.ToInt32(_userManager.Users
-                                            .Where(u => u.Email == botMail)
-                                            .FirstOrDefault().Id );
-                }
-                _context.SaveChanges();
 
+                try
+                {
+                    foreach (var b in unassignedBots)
+                    {
+                        string botName = "Bot" + b.ID.ToString() + "_" + random.Next(999999).ToString();
+                        string botMail = botName + "@domain.com";
+                        var user = new User
+                        {
+                            UserName = botName,
+                            Email = botMail,
+                            avatarUrl = "https://i.pravatar.cc/100?img=" + random.Next(1, 71).ToString()
+                        };
+                        var result = await _userManager.CreateAsync(user, "Password123");
+                        if (!result.Succeeded)
+                        {
+                            _logger.LogWarning("Failed to create account for bot " +
+                                               b.ID.ToString());
+                        }
+                        b.userID = Convert.ToInt32(_userManager.Users
+                                                .Where(u => u.Email == botMail)
+                                                .FirstOrDefault().Id);
+                    }
+                    _context.SaveChanges();
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception, "");
+                }
                 bots = _context.Bot.Select(model => new Bot(model)).ToList();
+
             }
 
             _logger.LogInformation("Bot Start");
             _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
             return;
         }
-        public void DoWork(object state) {
-          _logger.LogInformation("Bot run");
+        public void DoWork(object state)
+        {
+            _logger.LogInformation("Bot run");
+            try
+            {
+                foreach (Bot bot in bots)
+                {
+                    float postDet = (float)random.NextDouble();
+                    if (postDet < bot.postProbability)
+                    {
+                        string generated = "";
+                        int wordsCount = random.Next(bot.minWords, bot.maxWords);
 
-          foreach(Bot bot in bots) {
-            float postDet = (float)random.NextDouble();
-            if(postDet < bot.postProbability){
-              string generated = "";
-              int wordsCount = random.Next(bot.minWords, bot.maxWords);
+                        bool capitalLetter = true;
+                        bool omitSpace = true;
 
-              bool capitalLetter = true;
-              bool omitSpace = true;
+                        int wordIndex = Array.IndexOf(bot.words, ".");
+                        if (wordIndex < 0)
+                            wordIndex = random.Next(bot.count);
 
-              int wordIndex = Array.IndexOf(bot.words, ".");
-              if(wordIndex < 0)
-                  wordIndex = random.Next(bot.count);
+                        for (int i = 0; i < wordsCount; i++)
+                        {
+                            float r = (float)random.NextDouble();
+                            float temp = 0.0f;
 
-              for(int i=0; i < wordsCount; i++) {
-                  float r = (float)random.NextDouble();
-                  float temp = 0.0f;
+                            int resultIndex = random.Next(bot.count);
 
-                  int resultIndex = random.Next(bot.count);
+                            for (int y = 0; y < bot.count; y++)
+                            {
+                                temp += bot.markovMatrix[y, wordIndex];
+                                if (temp > r)
+                                {
+                                    var w = bot.words[y];
+                                    if (capitalLetter)
+                                    {
+                                        var wChArr = w.ToCharArray();
+                                        wChArr[0] = char.ToUpper(wChArr[0]);
+                                        w = new string(wChArr);
+                                        capitalLetter = false;
+                                    }
 
-                  for(int y=0; y < bot.count; y++) {
-                      temp += bot.markovMatrix[y, wordIndex];
-                      if(temp > r) {
-                          var w = bot.words[y];
-                          if(capitalLetter) {
-                              var wChArr = w.ToCharArray();
-                              wChArr[0] = char.ToUpper(wChArr[0]);
-                              w = new string(wChArr);
-                              capitalLetter = false;
-                          }
+                                    if (w != "." && w != "," && w != "!")
+                                    {
+                                        if (omitSpace)
+                                        {
+                                            omitSpace = false;
+                                        }
+                                        else
+                                        {
+                                            generated += " ";
+                                            generated += w;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (w == ".") capitalLetter = true;
+                                        omitSpace = true;
+                                        generated += w + " ";
+                                    }
 
-                          if(w != "." && w != "," && w != "!") {
-                              if(omitSpace) {
-                                  omitSpace = false;
-                              }else{
-                                  generated += " ";
-                                  generated += w;
-                              }
-                          } else {
-                              if(w == ".") capitalLetter = true;
-                              omitSpace = true;
-                              generated += w + " ";
-                          }
+                                    resultIndex = y;
+                                    break;
+                                }
+                            }
+                            wordIndex = resultIndex;
+                        }
 
-                          resultIndex = y;
-                          break;
-                      }
-                  }
-                  wordIndex = resultIndex;
-              }
+                        using (var scope = _scopeFactory.CreateScope())
+                        {
+                            var _context =
+                                scope.ServiceProvider.GetRequiredService<QuackDbContext>();
+                            if (_context.Post.Count() < 10 || random.NextDouble() > 0.85)
+                            {
+                                var postContent = new PostContent { text = generated };
+                                var post = new Post
+                                {
+                                    content = postContent,
+                                    authorID = bot.userID,
+                                    datePublished = DateTime.UtcNow
+                                };
 
-              using (var scope = _scopeFactory.CreateScope()) {
-                var _context =
-                    scope.ServiceProvider.GetRequiredService<QuackDbContext>();
-                if(_context.Post.Count() < 10 || random.NextDouble() > 0.85) {
-                  var postContent = new PostContent{text = generated};
-                  var post = new Post{
-                      content = postContent,
-                      authorID = bot.userID,
-                      datePublished = DateTime.UtcNow
-                  };
+                                _context.Post.Add(post);
+                                _context.SaveChanges();
+                            }
+                            else
+                            {
+                                var postID = _context.Post
+                                    .OrderByDescending(p => p.datePublished)
+                                    .Skip(random.Next(5))
+                                    .FirstOrDefault().ID;
 
-                  _context.Post.Add(post);
-                  _context.SaveChanges();
-                } else {
-                  var postID = _context.Post
-                      .OrderByDescending(p => p.datePublished)
-                      .Skip(random.Next(5))
-                      .FirstOrDefault().ID;
+                                var comment = new Comment
+                                {
+                                    text = generated,
+                                    postID = postID,
+                                    authorID = bot.userID,
+                                    datePublished = DateTime.UtcNow
+                                };
 
-                  var comment = new Comment{
-                      text = generated,
-                      postID = postID,
-                      authorID = bot.userID,
-                      datePublished = DateTime.UtcNow
-                  };
-
-                  _context.Comment.Add(comment);
-                  _context.SaveChanges();
+                                _context.Comment.Add(comment);
+                                _context.SaveChanges();
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "");
+            }
         }
-        public Task StopAsync(CancellationToken cancellationToken) {
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
             _logger.LogInformation("Bot Stop");
             _timer?.Change(Timeout.Infinite, 0);
             return Task.CompletedTask;
         }
-        public void Dispose() {
+        public void Dispose()
+        {
             _timer?.Dispose();
         }
     }

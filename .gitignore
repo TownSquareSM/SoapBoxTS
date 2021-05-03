@@ -2,3 +2,5 @@ Quack.db
 obj/*
 bin/*
 todo
+/.vs
+/*.user

@@ -95,9 +95,9 @@ namespace Quack.Controllers
             return await _context.Post
                 .OrderByDescending(p => p.datePublished)
                 //I have absolutely no idea why I cant just pass lambda here
-                .Where(p => idFilter(p))
-                .Where(p => ofUserFilter(p, ofUserID)) 
-                .Where(p => forUserFilter(p, followed))
+                //.Where(p => idFilter(p))
+                //.Where(p => ofUserFilter(p, ofUserID)) 
+                //.Where(p => forUserFilter(p, followed))
                 .Take(count.Value)
                 .Include(p => p.content)
                 .Include(p => p.author)
